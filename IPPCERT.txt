@@ -1,0 +1,30 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+
+int main()
+{
+    ll n,m,k;  cin>>n>>m>>k;
+     
+     ll ans =0;
+   
+    while(n--)
+    {
+       
+        ll sum=0;
+
+        for(ll i=1;i<=k;i++)
+        {
+            ll a; cin>>a;
+            sum+=a;
+        }
+        
+        ll b; cin>>b;
+       // cout<<sum<<" "<<b<<endl;
+        
+        if(sum>=m&&b<=10) ans++;
+    }
+    cout<<ans<<endl;
+
+}

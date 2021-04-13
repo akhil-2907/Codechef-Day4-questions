@@ -1,0 +1,199 @@
+#include <bits/stdc++.h>
+//#define mod 1000000007
+//#define mod 998244353
+#define INF LLONG_MAX
+#define NINF LLONG_MIN
+#define ll long long int
+#define pr pair<ll, ll>
+#define ps pair<ll, string>
+#define ff first
+#define ss second
+#define pub push_back
+#define pob pop_back
+#define f(i, a, b) for (int i = a; i <= b; i++)
+#define r(i, a, b) for (int i = a; i >= b; i--)
+#define ms(a, b) memset(a, b, sizeof(a))
+#define line cout << '\n'
+#define all(v) v.begin(), v.end()
+#define rev(s) reverse(all(s))
+using namespace std;
+
+ll w[300001], val[300001], mod = pow(2, 32) - 1;
+int parent[300001], depth[300001];
+vector<int> adjList[300001];
+
+struct query
+{
+    int u, v, index;
+};
+
+struct pair_hash
+{
+    template <class T1, class T2>
+    size_t operator()(const pair<T1, T2> &p) const
+    {
+        size_t h = (size_t(p.first) << 32) + size_t(p.second);
+        h *= 1231231557ull;
+        h ^= (h >> 32);
+        return h;
+    }
+};
+
+bool Compare(query &a, query &b)
+{
+    return depth[a.u] < depth[b.u];
+}
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int tt = 1;
+    //cin >> tt;
+
+    f(t, 1, tt)
+    {
+        int n, q;
+        cin >> n >> q;
+
+        f(i, 1, n)
+        {
+            cin >> w[i];
+        }
+
+        f(i, 1, n - 1)
+        {
+            int x, y;
+            cin >> x >> y;
+
+            adjList[x].pub(y);
+            adjList[y].pub(x);
+        }
+
+        queue<int> Q;
+
+        Q.push(1);
+        parent[1] = 0;
+        val[0] = 0;
+        depth[0] = 0;
+
+        while (!Q.empty())
+        {
+            int at = Q.front();
+            Q.pop();
+
+            for (auto to : adjList[at])
+            {
+                if (to != parent[at])
+                {
+                    parent[to] = at;
+                    Q.push(to);
+                }
+            }
+
+            depth[at] = depth[parent[at]] + 1;
+            val[at] = (val[parent[at]] + w[at] * w[at]) & mod;
+        }
+
+        vector<query> arr(q);
+        vector<ll> result(q);
+        unordered_map<pair<int, int>, ll, pair_hash> Map;
+
+        f(i, 0, q - 1)
+        {
+            cin >> arr[i].u >> arr[i].v;
+
+            if (arr[i].u > arr[i].v)
+            {
+                swap(arr[i].u, arr[i].v);
+            }
+
+            arr[i].index = i;
+        }
+
+        sort(all(arr), Compare);
+
+        int cnt = 0, i = 0;
+        bool flag = 1;
+
+        while (i < q)
+        {
+            int x = arr[i].u, y = arr[i].v;
+
+            ll ans = 0;
+
+            while (x != y)
+            {
+                if (cnt > 10e7)
+                {
+                    flag = 0;
+                    break;
+                }
+
+                ans = (ans + w[x] * w[y]) & mod;
+
+                x = parent[x];
+                y = parent[y];
+
+                cnt++;
+            }
+
+            if (!flag)
+            {
+                break;
+            }
+
+            ans = (ans + val[x]) & mod;
+            Map.insert({{arr[i].u, arr[i].v}, ans});
+            result[arr[i].index] = ans;
+
+            i++;
+        }
+
+        if (!flag)
+        {
+            while (i < q)
+            {
+                int x = arr[i].u, y = arr[i].v;
+                ll ans = 0;
+
+                while (x != y and Map.find({x, y}) == Map.end())
+                {
+                    ans = (ans + (w[x] * w[y]) & mod) & mod;
+
+                    x = parent[x];
+                    y = parent[y];
+
+                    if (x > y)
+                    {
+                        swap(x, y);
+                    }
+                }
+
+                if (x == y)
+                {
+                    ans = (ans + val[x]) & mod;
+                }
+                else
+                {
+                    ans = (ans + Map[{x, y}]) & mod;
+                }
+
+                Map.insert({{arr[i].u, arr[i].v}, ans});
+                result[arr[i].index] = ans;
+
+                i++;
+            }
+        }
+
+        f(i, 0, q - 1)
+        {
+            cout << result[i];
+
+            line;
+        }
+    }
+
+    return 0;
+}

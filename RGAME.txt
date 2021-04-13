@@ -1,0 +1,58 @@
+#include<stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+
+typedef long long int ll;
+#define MOD 1000000007
+int a[100005];
+ll store[100005];
+ll two[100005];
+
+ll power(ll a)
+{
+    if (!a || a < 0)
+    {
+        return 1;
+    }
+    else if (a % 2)
+    {
+        return (2 * power(a / 2) * power(a / 2)) % MOD;
+    }
+    else
+    {
+        return (power(a / 2) * power(a / 2)) % MOD;
+    }
+}
+
+int main()
+{
+    int T, N, i, j;
+    ll sum, add;
+    scanf("%d", &T);
+    while (T--)
+    {
+        sum = 0;
+        scanf("%d", &N);
+        N += 1;
+        for (i = 0; i < N; i++)
+        {
+            scanf("%d", &a[i]);
+            two[i + 1] = power(i);
+        }
+        two[0] = 1;
+        for (i = N - 1; i > 0; i--)
+        {
+            store[i] = (store[i + 1] + (a[i] * two[N - i]) % MOD) % MOD;
+        }
+        for (i = 0; i < N - 1; i++)
+        {
+            add = a[i];
+            add = (two[i] * add) % MOD;
+            add = (add * store[i + 1]) % MOD;
+            sum = sum + add;
+        }
+        printf("%lld\n", (sum * 2) % MOD);
+    }
+    return 0;
+}

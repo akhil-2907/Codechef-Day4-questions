@@ -1,0 +1,41 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define ll long long
+
+int main()
+{
+    ll t ;cin>>t;
+
+    while(t--)
+    {
+        ll ans =0;
+        string a,b;  cin>>a>>b;
+
+        for(ll i=0;i<b.length();i+=2)
+        {
+            if( a[i]!=b[i])
+            {
+                while(a[i]!=b[i]&&i<b.length())
+                {
+                    i+=2;
+                }
+                     ans++;
+            }
+       
+        }
+        for(ll i=1;i<b.length();i+=2)
+        {
+            if( a[i]!=b[i])
+            {
+                while(a[i]!=b[i]&&i<b.length())
+                {
+                    i+=2;
+                }
+                  ans++;
+            }
+          
+        }
+        cout<<ans<<endl;
+    }
+}
